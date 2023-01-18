@@ -1,0 +1,25 @@
+---
+
+  - name: 'build the custom image for CodeBuild'
+    hosts: 'localhost'
+    connection: 'local'
+    collections: 'ringier.aws_cicd'
+    gather_facts: false
+    vars:
+      project_id: 'rcplus'
+      project_version: 0.0.1
+      aws_region: 'eu-central-1'
+      software_component: 'devops'
+    pre_tasks:
+      - fail: msg='specify an environment (svc)'
+        when: env not in ['svc']
+      - include_vars: 'environment_vars/{{ env }}.yml'
+    roles:
+      - 'init_workspace'
+
+      - role: 'build_push_docker_image'
+        ecr_repository_name: '{{ env }}-{{ project_id }}-{{ software_component }}-codebuild'
+        share_with_org_unit: '{{ rcplus_aws_org_unit_path }}'
+        adhoc_deploy: true
+
+      - 'del_workspace'

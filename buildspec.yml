@@ -1,0 +1,16 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - ./ops-ci-shared/scripts/ci-init.sh
+  build:
+    commands:
+      - ./ops-ci-shared/scripts/ci-deploy.sh
+    finally:
+      - ./ops-ci-shared/scripts/ci-notify-slack.sh
+cache:
+  paths:
+    - '/root/.npm/**/*'
+    - '/root/.ansible/collections/**/*'
+    - '/root/.ansible/roles/**/*'
+    - '/root/.cache/pip/**/*'
