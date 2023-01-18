@@ -20,6 +20,7 @@
       - role: 'build_push_docker_image'
         ecr_repository_name: '{{ env }}-{{ project_id }}-{{ software_component }}-codebuild'
         share_with_org_unit: '{{ rcplus_aws_org_unit_path }}'
+        build_multi_arch: true
         adhoc_deploy: true
 
       - 'del_workspace'
