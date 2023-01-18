@@ -4,4 +4,5 @@ account_groups:
 environments:
   - svc
 compute_type_override: 'BUILD_GENERAL1_LARGE'
-build_multi_arch: true
+multi_arch: true
+environment_type_override: 'ARM_CONTAINER'

@@ -199,6 +199,10 @@ RUN set -ex \
     && mv /tmp/src/dockerd-entrypoint.sh /usr/local/bin/dockerd-entrypoint.sh \
     && mv /tmp/src/amazon-ssm-agent.json /etc/amazon/ssm/amazon-ssm-agent.json \
     #
+    # Bake the standard Ansible galaxy collections into the image
+    && ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main \
+    && ansible-galaxy collection install --upgrade ansible.posix community.aws amazon.aws community.general community.postgresql kubernetes.core \
+    #
     # Clean-up
     #
     && rm -rf /opt/aws \
