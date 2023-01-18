@@ -1,0 +1,7 @@
+---
+account_groups:
+  - rcplus
+environments:
+  - svc
+compute_type_override: 'BUILD_GENERAL1_LARGE'
+build_multi_arch: true

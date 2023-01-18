@@ -1,0 +1,9 @@
+version: 0.1
+
+runtimes:
+  nodejs:
+    versions:
+      18:
+        commands:
+          - echo "Installing Node.js version 18 ..."
+          - n $NODE_18_VERSION
