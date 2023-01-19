@@ -51,8 +51,14 @@ RUN set -ex \
           automake \
           build-essential \
           bzip2 \
+          bzr \
           ca-certificates \
           curl \
+          dirmngr \
+          dpkg-dev \
+          e2fsprogs \
+          expect \
+          fakeroot \
           file \
           g++ \
           gcc \
@@ -60,6 +66,8 @@ RUN set -ex \
           gettext-base \
           git \
           gnupg \
+          gzip \
+          iptables \
           jq \
           less \
           libapr1 \
@@ -80,6 +88,7 @@ RUN set -ex \
           libglib2.0-dev \
           libhttp-date-perl \
           libio-pty-perl \
+          libjpeg-dev \
           libkrb5-dev \
           liblzma-dev \
           libmysqlclient-dev \
@@ -94,6 +103,7 @@ RUN set -ex \
           libssl-dev \
           libsvn-perl \
           libsvn1 \
+          libtidy-dev \
           libtimedate-perl \
           libtool \
           libxml2-dev \
@@ -111,6 +121,8 @@ RUN set -ex \
           pkg-config \
           procps \
           python-is-python3 \
+          python3-configobj \
+          python3-openssl \
           python3-pip \
           python3.10 \
           rsync \
@@ -196,7 +208,7 @@ RUN set -ex \
     #
     && mv /tmp/src/ssh_config /root/.ssh/config \
     && mv /tmp/src/runtimes.yml /codebuild/image/config/runtimes.yml \
-    && mv /tmp/src/dockerd-entrypoint.sh /usr/local/bin/dockerd-entrypoint.sh \
+    && mv /tmp/src/dockerd-entrypoint.sh /usr/local/bin/start-dind.sh \
     && mv /tmp/src/amazon-ssm-agent.json /etc/amazon/ssm/amazon-ssm-agent.json \
     #
     # Bake the standard Ansible galaxy collections into the image
@@ -208,9 +220,9 @@ RUN set -ex \
     && rm -rf /opt/aws \
     && rm -rf /tmp/* \
     && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/tmp/* \
     && echo "" > /var/log/dpkg.log \
-    && echo "" > /var/log/apt/history.log
+    && echo "" > /var/log/apt/history.log \
+    && apt-get clean
 
 VOLUME /var/lib/docker
-
-ENTRYPOINT ["/usr/local/bin/dockerd-entrypoint.sh"]
