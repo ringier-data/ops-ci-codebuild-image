@@ -6,12 +6,14 @@ Connect+ standard image for AWS CodeBuild.
 
 ## BOM
 
-* Ubuntu 22.04
+* Ubuntu 22.10
 * stunnel 5.67
 * aws-iam-authenticator 0.6.2
 * kubectl 1.24.7
 * awscli2 latest
-* Python 3.10.* (NOTE: Ubuntu 22.04 latest)
+* Python 3.10.* (NOTE: from Ubuntu 22.10)
+* Docker CE (NOTE: incl. docker-compose and docker-buildx, from https://download.docker.com/linux/ubuntu/)
+* dind latest
 * pip latest
 * Node.js 18.13.0
 
@@ -19,16 +21,21 @@ Connect+ standard image for AWS CodeBuild.
 
 NOTE: Do NOT forget to update this document as well to keep information in sync.
 
-### Ubuntu 22.04
+### Ubuntu 22.10
 
 Update `./app/Dockerfile` to change `FROM ubuntu:xx.xx`. We should work with Ubuntu LTS release by default.
+
+### Node.js 18.13.0
+
+Check https://nodejs.org/en/download/ to see if there is any new version.
+
+In case of a new version, update `./app/Dockerfile` to change `NODE_18_VERSION`.
 
 ### stunnel 5.67
 
 Check https://www.stunnel.org/downloads.html to see if there is any new version.
 
-In case of a new version, update `./app/Dockerfile` to change `STUNNEL_VERSION`. Do not forget to change
-`STUNNEL_SHA256` at the same time. The SHA256 value can be found from the download page mentioned above. 
+In case of a new version, update `./app/Dockerfile` to change `STUNNEL_VERSION`. 
 
 ### AWS tools
 
@@ -47,15 +54,6 @@ Note it down.
 
 Check https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html and copy the URL of corresponding `kubectl` file, update
 `./app/Dockerfile` to reflect it.
-
-### Docker 20.10.22 && docker-compose 2.15.1 && dind commit 1f32e3c95d72a29b3eaacba156ed675dba976cb5
-
-Check https://github.com/docker/compose/releases to see if there is any version of `docker-compose`. If yes, update `./app/Dockerfile` to
-change `DOCKER_COMPOSE_VERSION`
-
-Check https://github.com/docker-library/docker/blob/master/versions.json, if there is a new version of Docker Engine:
-* update `./app/Dockerfile` to change `DOCKER_VERSION`
-* update `./app/Dockerfile` to change `DIND_COMMIT`
 
 ### Python packages
 
