@@ -17,13 +17,13 @@ aws-sam-translator==1.57.0
     #   cfn-lint
 binaryornot==0.4.4
     # via cookiecutter
-boto3==1.26.51
+boto3==1.26.54
     # via
     #   -r ./app/requirements.in
     #   aws-sam-cli
     #   aws-sam-translator
     #   serverlessrepo
-botocore==1.29.51
+botocore==1.29.54
     # via
     #   boto3
     #   s3transfer
@@ -154,7 +154,7 @@ sarif-om==1.0.4
     # via cfn-lint
 serverlessrepo==0.1.10
     # via aws-sam-cli
-setuptools==66.0.0
+setuptools==66.1.1
     # via
     #   -r ./app/requirements.in
     #   aws-lambda-builders

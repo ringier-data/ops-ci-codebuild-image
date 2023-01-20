@@ -1,16 +1,16 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.10
 
 COPY . /tmp/src
-COPY --from=docker/buildx-bin:latest /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 
-# NOTE 1: for the Ubuntu packages installed in the official 22.04 Docker image, the list can be found at:
-#    https://git.launchpad.net/cloud-images/+oci/ubuntu-base/commit/?h=dist-jammy-amd64-20221130&id=5107d90663ceb24789a9fa19136b0753c5651aa0
+# NOTE 1: for the Ubuntu packages installed in the official 22.10 Docker image, the list can be found at:
+#    https://git.launchpad.net/cloud-images/+oci/ubuntu-base/commit/?h=dist-kinetic-amd64-20221130&id=28c4e64ea84b6e9bcd1352e81cf71dbb47f259cc
 #    Generally, start from https://git.launchpad.net/cloud-images/+oci/ubuntu-base/refs/tags to get the corresponding commit
 # NOTE 2: the AWS standard CodeBuild images uses ppa:git-core/ppa to install the newest version of git. To use the ppa
 #    registry, we will have to install package software-properties-common, which implies the installation of Python3
 #    and quite some other packages. As we will install a Python interpreter later with pyenv, the redundancy should be
-#    avoided. To reduce the eventual image size, we take the Ubuntu 22.04 standard git, so that software-properties-common
+#    avoided. To reduce the eventual image size, we take the Ubuntu 22.10 standard git, so that software-properties-common
 #    is not needed.
+
 RUN set -ex \
     #
     # Setup environment (we intentionally avoid using ARG or ENV to avoid extra image layer)
@@ -28,23 +28,11 @@ RUN set -ex \
     #
     && NODE_18_VERSION="18.13.0" \
     #
-    && DOCKER_BUCKET="download.docker.com" \
-    && DOCKER_CHANNEL="stable" \
-    && DIND_COMMIT="1f32e3c95d72a29b3eaacba156ed675dba976cb5" \
-    && DOCKER_COMPOSE_VERSION="2.15.1" \
-    && DOCKER_VERSION="20.10.22" \
-    #
-    # Install git, SSH, and other utilities \
+    # Install git, SSH, and other utilities
     #
     && echo 'Acquire::CompressionTypes::Order:: "gz";' > /etc/apt/apt.conf.d/99use-gzip-compression \
     && apt-get update -qq \
-    && apt install -y -qq --no-install-recommends apt-transport-https apt-utils openssh-client \
-    && mkdir ~/.ssh \
-    && mkdir -p /codebuild/image/config \
-    && touch ~/.ssh/known_hosts \
-    && ssh-keyscan -t rsa,dsa -H github.com >> ~/.ssh/known_hosts \
-    && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
-    && chmod 600 ~/.ssh/known_hosts \
+    && apt install -y -qq --no-install-recommends apt-transport-https apt-utils \
     && apt-get install -y -qq --no-install-recommends \
           asciidoc  \
           autoconf \
@@ -69,6 +57,7 @@ RUN set -ex \
           gzip \
           iptables \
           jq \
+          kmod \
           less \
           libapr1 \
           libaprutil1 \
@@ -114,8 +103,10 @@ RUN set -ex \
           libzip-dev \
           llvm \
           locales \
+          lsb-release \
           make \
           netbase \
+          openssh-client \
           openssl \
           patch \
           pkg-config \
@@ -186,27 +177,42 @@ RUN set -ex \
     && python --version \
     && ansible --version \
     #
-    # Install Docker (engine, dind, compose, buildx)
+    # Install Docker (and dind)
     #
-    && mkdir /tmp/docker \
-    && cd /tmp/docker \
-    && curl -sSL -o docker.tgz https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/${ARCH}/docker-${DOCKER_VERSION}.tgz \
-    && tar zxf docker.tgz --strip-components 1 --directory /usr/local/bin/ \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -sSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list \
+    && apt-get update -qq \
+    && apt-get install -y -qq --no-install-recommends \
+          containerd.io \
+          docker-ce \
+          docker-ce-cli \
+          docker-compose-plugin \
     # set up subuid/subgid so that "--userns-remap=default" works out-of-the-box
     && addgroup dockremap \
     && useradd -g dockremap dockremap \
     && echo 'dockremap:165536:65536' >> /etc/subuid \
     && echo 'dockremap:165536:65536' >> /etc/subgid \
+    # refer to https://github.com/docker-library/docker/blob/master/versions.sh
+    && DIND_COMMIT=$(curl -sSL https://github.com/docker/docker/commits/master/hack/dind.atom |grep -E 'id.*Commit' |awk -F '[[:space:]]*[<>/]+' '$2 == "id" && $3 ~ /Commit/ { print $4; exit }') \
     && curl -sSL -o /usr/local/bin/dind https://raw.githubusercontent.com/docker/docker/${DIND_COMMIT}/hack/dind \
-    && curl -sSL https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-${ARCH} > /usr/local/bin/docker-compose \
-    && chmod +x /usr/local/bin/dind /usr/local/bin/docker-compose \
+    && chmod +x /usr/local/bin/dind \
     && docker -v \
-    && docker-compose version \
+    && docker compose version \
     && docker buildx version \
+    #
+    # Configure SSH
+    #
+    && mkdir ~/.ssh \
+    && touch ~/.ssh/known_hosts \
+    && ssh-keyscan -t rsa,dsa -H github.com >> ~/.ssh/known_hosts \
+    && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
+    && chmod 400 ~/.ssh/known_hosts \
+    && mv /tmp/src/ssh_config /root/.ssh/config \
     #
     # Place configuration files
     #
-    && mv /tmp/src/ssh_config /root/.ssh/config \
+    && mkdir -p /codebuild/image/config \
     && mv /tmp/src/runtimes.yml /codebuild/image/config/runtimes.yml \
     && mv /tmp/src/dockerd-entrypoint.sh /usr/local/bin/start-dind.sh \
     && mv /tmp/src/amazon-ssm-agent.json /etc/amazon/ssm/amazon-ssm-agent.json \
@@ -217,12 +223,12 @@ RUN set -ex \
     #
     # Clean-up
     #
+    && apt-get clean \
     && rm -rf /opt/aws \
     && rm -rf /tmp/* \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/tmp/* \
     && echo "" > /var/log/dpkg.log \
-    && echo "" > /var/log/apt/history.log \
-    && apt-get clean
+    && echo "" > /var/log/apt/history.log
 
 VOLUME /var/lib/docker
