@@ -1,6 +1,6 @@
 # ops-ci-codebuild-image
 
-**Current version: v0.1.0**
+**Current version: v0.1.1**
 
 Connect+ standard image for AWS CodeBuild.
 
