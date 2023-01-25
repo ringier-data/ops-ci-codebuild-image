@@ -219,7 +219,14 @@ RUN set -ex \
     #
     # Bake the standard Ansible galaxy collections into the image
     && ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main \
-    && ansible-galaxy collection install --upgrade ansible.posix community.aws amazon.aws community.general community.postgresql kubernetes.core \
+    && ansible-galaxy collection install --upgrade \
+          amazon.aws \
+          ansible.netcommon \
+          ansible.posix \
+          community.aws \
+          community.general \
+          community.postgresql \
+          kubernetes.core \
     #
     # Clean-up
     #
