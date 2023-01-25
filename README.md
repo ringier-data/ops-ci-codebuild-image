@@ -44,7 +44,7 @@ In case of a new version, update `./app/Dockerfile` to change `STUNNEL_VERSION`.
 Check https://github.com/kubernetes-sigs/aws-iam-authenticator/releases to see if there is any new patch for `aws-iam-authenticator`.
 In case of a new patch, update `./app/Dockerfile` to change the corresponding URLS
 
-#### kubectl 1.24.7
+#### kubectl 1.24.9
 
 NOTE: according the [AWS document](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html), `kubectl` supports plus/minus
 only one minor version difference of EKS control plane. We do not have the free choice to pick the `kubectl` version.
