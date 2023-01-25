@@ -1,4 +1,4 @@
-FROM ubuntu:22.10
+FROM docker.rcplus.io/ubuntu:22.10
 
 COPY . /tmp/src
 
@@ -143,7 +143,7 @@ RUN set -ex \
     && stunnel -version \
     # AWS Tools
     && curl -sSL -o /usr/local/bin/aws-iam-authenticator --ipv4 --ssl-allow-beast --ssl-no-revoke --ssl-revoke-best-effort https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.6.2/aws-iam-authenticator_0.6.2_linux_${PLATFORM} \
-    && curl -sSL -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/${PLATFORM}/kubectl \
+    && curl -sSL -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.9/2023-01-11/bin/linux/${PLATFORM}/kubectl \
     && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator \
     && aws-iam-authenticator version \
     && kubectl version --client=true --output=yaml \
