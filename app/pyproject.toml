@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "ops-ci-codebuild-image"
+version = "0.2.0"
+description = ""
+authors = ["Ringier AG <admin@rcplus.io>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+ansible-core = "*"
+boto3 = "*"
+dnspython = "*"
+netaddr = "*"
+pyyaml = "5.*"  # for aws-sam-cli
+requests = "*"
+setuptools = "*"
+virtualenv = "*"
+wheel = "*"
+dvc = {extras = ["s3"], version = ">=2.16.0"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

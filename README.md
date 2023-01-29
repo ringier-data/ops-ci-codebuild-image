@@ -1,8 +1,15 @@
 # ops-ci-codebuild-image
 
-**Current version: v0.1.3**
+**Current version: v0.2.0**
 
 Connect+ standard image for AWS CodeBuild.
+
+## Usage
+
+The outcome of this repo is a Docker image, being used by `ops-ci-codebuild` for all RC+ CodeBuild projects.
+
+To avoid the chicken-egg constraint, this image itself is not to be built with CodeBuild. Instead, a Github workflow with GitHub Actions
+is configured to build the image and push the result to ECR with additionally a `latest` tag when anything committed to `main` branch.  
 
 ## BOM
 
@@ -15,6 +22,7 @@ Connect+ standard image for AWS CodeBuild.
 * Docker CE (NOTE: incl. docker-compose and docker-buildx, from https://download.docker.com/linux/ubuntu/)
 * dind latest
 * pip latest
+* poetry latest
 * Node.js 18.13.0
 
 ## To upgrade the components
@@ -57,9 +65,14 @@ Check https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html and 
 
 ### Python packages
 
-Run the shell command to update the `requirements.txt`: 
+Run the shell command (LOCALLY, because it is a development instead of deployment activity) to update the `poetry.lock` file: 
 ```bash
-pip-compile --upgrade --no-header --quiet --allow-unsafe ./app/requirements.in > ./app/requirements.txt
+cd ./app && poetry lock && poetry export --without-hashes --without-urls  | grep -iv pywin32= | sed -E 's/(.*)\ ;.*/\1/g' > requirements.txt && cd ..
 ```
 
-NOTE: in case `pip-compile` is not found, manually install it with `pip install pip-tools` 
+NOTE: here we use `poetry` to manage the dependencies, because of the well-known conflicts between `dvc[s3]` and `botocore`, using
+`pip-tools` would never resolve the dependencies into a state that all the constraints are satisfied, irrelevant from which resolver
+strategy we chose.
+
+Although `poetry.lock` is the source of truth for the container image build, we produce a `requirements.txt` here to serve as the bill
+of material for human reference.

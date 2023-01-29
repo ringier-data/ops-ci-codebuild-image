@@ -1,197 +1,111 @@
+aiobotocore==2.4.2
+aiobotocore[boto3]==2.4.2
+aiohttp-retry==2.8.3
+aiohttp==3.7.4.post0
+aioitertools==0.11.0
+amqp==5.1.1
 ansible-core==2.14.1
-    # via -r ./app/requirements.in
-arrow==1.2.3
-    # via jinja2-time
+antlr4-python3-runtime==4.9.3
+appdirs==1.4.4
+async-timeout==3.0.1
+asyncssh==2.13.0
+atpublic==3.1.1
 attrs==22.2.0
-    # via
-    #   jschema-to-python
-    #   jsonschema
-    #   sarif-om
-aws-lambda-builders==1.24.0
-    # via aws-sam-cli
-aws-sam-cli==1.71.0
-    # via -r ./app/requirements.in
-aws-sam-translator==1.58.0
-    # via
-    #   aws-sam-cli
-    #   cfn-lint
-binaryornot==0.4.4
-    # via cookiecutter
-boto3==1.26.56
-    # via
-    #   -r ./app/requirements.in
-    #   aws-sam-cli
-    #   aws-sam-translator
-    #   serverlessrepo
-botocore==1.29.56
-    # via
-    #   boto3
-    #   s3transfer
+billiard==3.6.4.0
+boto3==1.24.59
+botocore==1.27.59
+celery==5.2.7
 certifi==2022.12.7
-    # via requests
 cffi==1.15.1
-    # via cryptography
-cfn-lint==0.72.2
-    # via aws-sam-cli
 chardet==4.0.0
-    # via
-    #   binaryornot
-    #   requests
-chevron==0.14.0
-    # via aws-sam-cli
+charset-normalizer==3.0.1
+click-didyoumean==0.3.0
+click-plugins==1.1.1
+click-repl==0.2.0
 click==8.1.3
-    # via
-    #   aws-sam-cli
-    #   cookiecutter
-    #   flask
-cookiecutter==2.1.1
-    # via aws-sam-cli
+colorama==0.4.6
+configobj==5.0.8
 cryptography==39.0.0
-    # via
-    #   ansible-core
-    #   pyopenssl
-dateparser==1.1.6
-    # via aws-sam-cli
+dictdiffer==0.9.0
+diskcache==5.4.0
 distlib==0.3.6
-    # via virtualenv
+distro==1.8.0
 dnspython==2.3.0
-    # via -r ./app/requirements.in
-docker==4.2.2
-    # via aws-sam-cli
+dpath==2.1.4
+dulwich==0.21.2
+dvc-data==0.35.1
+dvc-http==2.30.1
+dvc-objects==0.19.0
+dvc-render==0.0.17
+dvc-render[table]==0.0.17
+dvc-s3==2.21.0
+dvc-studio-client==0.3.0
+dvc-task==0.1.11
+dvc==2.43.1
+dvc[s3]==2.43.1
+dvclive==1.3.3
 filelock==3.9.0
-    # via virtualenv
-flask==2.0.3
-    # via aws-sam-cli
-idna==2.10
-    # via requests
-itsdangerous==2.1.2
-    # via flask
+flatten-dict==0.4.2
+flufl-lock==7.1.1
+fsspec==2023.1.0
+fsspec[http]==2023.1.0
+funcy==1.18
+gitdb==4.0.10
+gitpython==3.1.30
+grandalf==0.8
+hydra-core==1.3.1
+idna==3.4
+iterative-telemetry==0.0.6
 jinja2==3.1.2
-    # via
-    #   ansible-core
-    #   cookiecutter
-    #   flask
-    #   jinja2-time
-jinja2-time==0.2.0
-    # via cookiecutter
-jmespath==0.10.0
-    # via
-    #   aws-sam-cli
-    #   boto3
-    #   botocore
-jschema-to-python==1.2.3
-    # via cfn-lint
-jsonpatch==1.32
-    # via cfn-lint
-jsonpickle==3.0.1
-    # via jschema-to-python
-jsonpointer==2.3
-    # via jsonpatch
-jsonschema==4.17.3
-    # via
-    #   aws-sam-translator
-    #   cfn-lint
-junit-xml==1.9
-    # via cfn-lint
+jmespath==1.0.1
+kombu==5.2.4
+markdown-it-py==2.1.0
 markupsafe==2.1.2
-    # via jinja2
+mdurl==0.1.2
+multidict==6.0.4
+nanotime==0.5.2
 netaddr==0.8.0
-    # via -r ./app/requirements.in
-networkx==2.8.8
-    # via cfn-lint
+networkx==3.0
+omegaconf==2.3.0
+orjson==3.8.5
 packaging==23.0
-    # via ansible-core
-pbr==5.11.1
-    # via
-    #   jschema-to-python
-    #   sarif-om
+pathspec==0.11.0
 platformdirs==2.6.2
-    # via virtualenv
+prompt-toolkit==3.0.36
+psutil==5.9.4
 pycparser==2.21
-    # via cffi
-pydantic==1.10.4
-    # via aws-sam-translator
-pyopenssl==23.0.0
-    # via aws-sam-cli
-pyrsistent==0.19.3
-    # via jsonschema
+pydot==1.4.2
+pygit2==1.11.1
+pygments==2.14.0
+pygtrie==2.5.0
+pyparsing==3.0.9
 python-dateutil==2.8.2
-    # via
-    #   arrow
-    #   botocore
-    #   dateparser
-python-slugify==7.0.0
-    # via cookiecutter
 pytz==2022.7.1
-    # via dateparser
 pyyaml==5.4.1
-    # via
-    #   -r ./app/requirements.in
-    #   ansible-core
-    #   aws-sam-cli
-    #   cfn-lint
-    #   cookiecutter
-    #   serverlessrepo
-regex==2021.9.30
-    # via
-    #   aws-sam-cli
-    #   dateparser
-requests==2.25.1
-    # via
-    #   -r ./app/requirements.in
-    #   aws-sam-cli
-    #   cookiecutter
-    #   docker
+requests==2.28.2
 resolvelib==0.8.1
-    # via ansible-core
-ruamel-yaml==0.17.21
-    # via aws-sam-cli
+rich==13.3.1
 ruamel-yaml-clib==0.2.7
-    # via ruamel-yaml
+ruamel-yaml==0.17.21
+s3fs==2023.1.0
 s3transfer==0.6.0
-    # via boto3
-sarif-om==1.0.4
-    # via cfn-lint
-serverlessrepo==0.1.10
-    # via aws-sam-cli
-setuptools==66.1.1
-    # via
-    #   -r ./app/requirements.in
-    #   aws-lambda-builders
+scmrepo==0.1.6
+setuptools==67.0.0
+shortuuid==1.0.11
+shtab==1.5.8
 six==1.16.0
-    # via
-    #   docker
-    #   junit-xml
-    #   python-dateutil
-    #   serverlessrepo
-text-unidecode==1.3
-    # via python-slugify
-tomlkit==0.7.2
-    # via aws-sam-cli
+smmap==5.0.0
+sqltrie==0.0.26
+tabulate==0.9.0
+tomlkit==0.11.6
+tqdm==4.64.1
 typing-extensions==4.4.0
-    # via
-    #   aws-sam-cli
-    #   aws-sam-translator
-    #   pydantic
-tzlocal==3.0
-    # via
-    #   aws-sam-cli
-    #   dateparser
 urllib3==1.26.14
-    # via
-    #   botocore
-    #   requests
+vine==5.0.0
 virtualenv==20.17.1
-    # via -r ./app/requirements.in
-watchdog==2.1.2
-    # via aws-sam-cli
-websocket-client==1.4.2
-    # via docker
-werkzeug==2.0.3
-    # via
-    #   aws-sam-cli
-    #   flask
+voluptuous==0.13.1
+wcwidth==0.2.6
 wheel==0.38.4
-    # via
-    #   -r ./app/requirements.in
-    #   aws-lambda-builders
+wrapt==1.14.1
+yarl==1.8.2
+zc-lockfile==2.0
