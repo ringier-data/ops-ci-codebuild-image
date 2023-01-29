@@ -1,4 +1,4 @@
-FROM docker.rcplus.io/ubuntu:22.10
+FROM public.ecr.aws/ubuntu/ubuntu:22.10
 
 COPY . /tmp/src
 
@@ -31,15 +31,15 @@ RUN set -ex \
     # Install git, SSH, and other utilities
     #
     && echo 'Acquire::CompressionTypes::Order:: "gz";' > /etc/apt/apt.conf.d/99use-gzip-compression \
-    && apt-get update -qq \
-    && apt install -y -qq --no-install-recommends apt-transport-https apt-utils \
-    && apt-get install -y -qq --no-install-recommends \
+    && echo 'Dpkg::Use-Pty "0";' > /etc/apt/apt.conf.d/99dpkg-use-pipe-instead-of-pty \
+    && apt-get -qq update \
+    && apt -qq install -y --no-install-recommends apt-transport-https apt-utils \
+    && apt-get -qq install -y --no-install-recommends \
           asciidoc  \
           autoconf \
           automake \
           build-essential \
           bzip2 \
-          bzr \
           ca-certificates \
           curl \
           dirmngr \
@@ -116,6 +116,7 @@ RUN set -ex \
           python3-openssl \
           python3-pip \
           python3.10 \
+          python3.10-dev \
           rsync \
           tar \
           unzip \
@@ -147,12 +148,10 @@ RUN set -ex \
     && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator \
     && aws-iam-authenticator version \
     && kubectl version --client=true --output=yaml \
-    # Configure SSM
     && mkdir /tmp/ssm \
     && cd /tmp/ssm \
     && curl -sSL -o amazon-ssm-agent.deb https://s3.amazonaws.com/amazon-ssm-us-east-1/latest/debian_${PLATFORM}/amazon-ssm-agent.deb \
     && dpkg -i amazon-ssm-agent.deb \
-    # Install AWS CLI v2
     && curl -sSL -o /tmp/awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-${ARCH}.zip \
     && unzip -q /tmp/awscliv2.zip -d /opt \
     && /opt/aws/install --update --install-dir /usr/local/aws-cli --bin-dir /usr/local/bin \
@@ -172,18 +171,62 @@ RUN set -ex \
     #
     # Install Python packages
     #
-    && pip --quiet --disable-pip-version-check --no-color install --no-cache-dir --upgrade pip \
-    && pip --quiet --disable-pip-version-check --no-color install --no-cache-dir --requirement /tmp/src/requirements.txt \
+    && pip --disable-pip-version-check --no-color install --no-cache-dir --upgrade pip poetry \
+    # NOTE-zw: AWS needs to learn how to behave less intrusive in the OSS world, being powerful alone won't bring it
+    # that far. We apply a VERY dirty workaround here to work something around.
+    # The deadlock:
+    # *  aws-sam-cli is packaged as a pip package. However, if we put it together with the other dependencies
+    #    --especially with botocore and dvc[s3], the dependencies resolution will never succeed, no matter which
+    #    resolution strategy we take.
+    # *  Therefore, aws-sam-cli comes up with its own native installer, which basically installs an isolated Python
+    #    environment. Refer to https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html
+    # *  This approach avoids the dependencies conflict, but it works only for x86_64. According to the same document
+    #    above, the installation for ARM64 still goes the pip way.
+    # *  This image is built by intention to be multi-arch enabled. We cannot accept two very different approaches to
+    #    handle the same SIMPLE job.
+    # The workaround:
+    # *  We pip install aws-sam-cli right after pip and poetry
+    # *  aws-sam-cli uses pyyaml a lot. Unfortunately there are many `yaml.load()`, which will be broken after pyyaml 6.0
+    #    because of the incompatible change of switching to `yaml.safe_load()`. So we pin pyyaml at pyproject.toml to
+    #    5.*
+    # *  After that, we use the poetry locked dependencies (of course, without aws-sam-cli) to overwrite the outdated
+    #    packages. As of 2023.01.27, we are talking about:
+    #       Updating idna (2.10 -> 3.4)
+    #       Updating jmespath (0.10.0 -> 1.0.1)
+    #       Updating requests (2.25.1 -> 2.28.2)
+    #       Updating networkx (2.8.8 -> 3.0)
+    #       Updating tomlkit (0.7.2 -> 0.11.6)
+    # * The most important step is to keep fingers crossed and pray
+    # The additional notes:
+    # *  As this procedure is very hacky, we intentionally avoid using `--quite` parameter of pip
+    && pip --disable-pip-version-check --no-color install --no-cache-dir --upgrade --no-warn-conflicts aws-sam-cli \
+    && cd /tmp/src/ \
+    && poetry config virtualenvs.create false \
+    && poetry --no-root --no-ansi --no-interaction --no-cache install \
+    && rm -rf ~/.cache \
+    && hash -r \
     && python --version \
     && ansible --version \
+    #
+    # Bake the standard Ansible galaxy collections into the image
+    && ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main \
+    && ansible-galaxy collection install --upgrade \
+          amazon.aws \
+          ansible.netcommon \
+          ansible.posix \
+          community.aws \
+          community.general \
+          community.postgresql \
+          google.cloud \
+          kubernetes.core \
     #
     # Install Docker (and dind)
     #
     && mkdir -p /etc/apt/keyrings \
     && curl -sSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list \
-    && apt-get update -qq \
-    && apt-get install -y -qq --no-install-recommends \
+    && apt-get -qq update \
+    && apt-get -qq install -y --no-install-recommends \
           containerd.io \
           docker-ce \
           docker-ce-cli \
@@ -217,17 +260,6 @@ RUN set -ex \
     && mv /tmp/src/dockerd-entrypoint.sh /usr/local/bin/start-dind.sh \
     && mv /tmp/src/amazon-ssm-agent.json /etc/amazon/ssm/amazon-ssm-agent.json \
     #
-    # Bake the standard Ansible galaxy collections into the image
-    && ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main \
-    && ansible-galaxy collection install --upgrade \
-          amazon.aws \
-          ansible.netcommon \
-          ansible.posix \
-          community.aws \
-          community.general \
-          community.postgresql \
-          kubernetes.core \
-    #
     # Clean-up
     #
     && apt-get clean \
@@ -235,6 +267,7 @@ RUN set -ex \
     && rm -rf /tmp/* \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/tmp/* \
+    && rm -rf ~/.cache \
     && echo "" > /var/log/dpkg.log \
     && echo "" > /var/log/apt/history.log
 

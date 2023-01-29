@@ -1,8 +1,0 @@
----
-account_groups:
-  - rcplus
-environments:
-  - svc
-compute_type_override: 'BUILD_GENERAL1_LARGE'
-multi_arch: true
-environment_type_override: 'LINUX_CONTAINER'

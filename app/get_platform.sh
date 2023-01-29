@@ -4,7 +4,7 @@ ARCH=$(uname -m)
 
 if [[ $ARCH = "x86_64" ]]; then
   PLATFORM="amd64"
-elif [[ $ARCH = "aarch64" ]]; then
+elif [[ $ARCH = "aarch64" || $ARCH = "arm64" ]]; then
   PLATFORM="arm64"
 else
   >&2 echo "Error: Unsupported platform"
