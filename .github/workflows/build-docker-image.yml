@@ -25,7 +25,6 @@ jobs:
       - name: 'Login to Amazon Public ECR (us-east-1)'
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          aws-region: us-east-1
           registry-type: public
       - name: 'Configure AWS credential for rcplus-svc (eu-central-1)'
         uses: aws-actions/configure-aws-credentials@v1
@@ -36,11 +35,9 @@ jobs:
           role-session-name: BuildCodeBuildImage
       - name: 'Login to Amazon ECR (eu-central-1)'
         uses: aws-actions/amazon-ecr-login@v1
-        with:
-          aws-region: eu-central-1
       - name: 'Create the BuildKit builder'
         run: docker buildx create --bootstrap --name rcplus --driver docker-container --platform linux/amd64,linux/arm64 --use --buildkitd-flags '--allow-insecure-entitlement security.insecure'
       - name: 'Create the emulators'
         run: docker run --privileged --rm public.ecr.aws/eks-distro-build-tooling/binfmt-misc:qemu-v7.0.0 --install arm64,amd64
       - name: 'Build the multi-arch Docker image and push to ECR'
-        run: docker buildx build --push --allow security.insecure --platform linux/amd64,linux/arm64 --builder rcplus --tag 354470900895.dkr.ecr.eu-central-1.amazonaws.com/svc-rcplus-devops-codebuild:0.2.0 --tag 354470900895.dkr.ecr.eu-central-1.amazonaws.com/svc-rcplus-devops-codebuild:latest ./app --progress plain
+        run: docker buildx build --push --allow security.insecure --platform linux/amd64,linux/arm64 --builder rcplus --tag 354470900895.dkr.ecr.eu-central-1.amazonaws.com/svc-rcplus-devops-codebuild:0.2.1 --tag 354470900895.dkr.ecr.eu-central-1.amazonaws.com/svc-rcplus-devops-codebuild:latest ./app --progress plain
