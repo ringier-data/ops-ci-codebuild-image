@@ -228,6 +228,7 @@ RUN set -ex \
     && apt-get -qq update \
     && apt-get -qq install -y --no-install-recommends \
           containerd.io \
+          docker-buildx-plugin \
           docker-ce \
           docker-ce-cli \
           docker-compose-plugin \
