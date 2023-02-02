@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Running DIND inside image 354470900895.dkr.ecr.eu-central-1.amazonaws.com/svc-rcplus-devops-codebuild:0.2.1"
+echo "Running DIND inside image 354470900895.dkr.ecr.eu-central-1.amazonaws.com/svc-rcplus-devops-codebuild:0.2.2"
 
 set -e
 
