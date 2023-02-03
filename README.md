@@ -1,6 +1,6 @@
 # ops-ci-codebuild-image
 
-**Current version: v0.2.3**
+**Current version: v0.2.4**
 
 Connect+ standard image for AWS CodeBuild.
 
@@ -31,7 +31,7 @@ NOTE: Do NOT forget to update this document as well to keep information in sync.
 
 ### Ubuntu 22.10
 
-Update `./app/Dockerfile` to change `FROM ubuntu:xx.xx`. We should work with Ubuntu LTS release by default.
+Update `./app/Dockerfile` to change `FROM ubuntu:xx.xx`.
 
 ### Node.js 18.13.0
 
