@@ -24,9 +24,9 @@ RUN set -ex \
     #
     && SRC_DIR="/usr/src" \
     #
-    && STUNNEL_VERSION="5.67" \
+    && STUNNEL_VERSION="5.68" \
     #
-    && NODE_18_VERSION="18.13.0" \
+    && NODE_18_VERSION="18.14.2" \
     #
     # Install git, SSH, and other utilities
     #
@@ -144,7 +144,7 @@ RUN set -ex \
     && stunnel -version \
     # AWS Tools
     && curl -sSL -o /usr/local/bin/aws-iam-authenticator --ipv4 --ssl-allow-beast --ssl-no-revoke --ssl-revoke-best-effort https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.6.2/aws-iam-authenticator_0.6.2_linux_${PLATFORM} \
-    && curl -sSL -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.9/2023-01-11/bin/linux/${PLATFORM}/kubectl \
+    && curl -sSL -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.25.6/2023-01-30/bin/linux/${PLATFORM}/kubectl \
     && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator \
     && aws-iam-authenticator version \
     && kubectl version --client=true --output=yaml \
