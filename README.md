@@ -14,16 +14,16 @@ is configured to build the image and push the result to ECR with additionally a 
 ## BOM
 
 * Ubuntu 22.10
-* stunnel 5.67
+* stunnel 5.68
 * aws-iam-authenticator 0.6.2
-* kubectl 1.24.7
+* kubectl 1.25.6
 * awscli2 latest
 * Python 3.10.* (NOTE: from Ubuntu 22.10)
 * Docker CE (NOTE: incl. docker-compose and docker-buildx, from https://download.docker.com/linux/ubuntu/)
 * dind latest
 * pip latest
 * poetry latest
-* Node.js 18.13.0
+* Node.js 18.14.2
 
 ## To upgrade the components
 
@@ -33,13 +33,13 @@ NOTE: Do NOT forget to update this document as well to keep information in sync.
 
 Update `./app/Dockerfile` to change `FROM ubuntu:xx.xx`.
 
-### Node.js 18.13.0
+### Node.js 18.14.2
 
 Check https://nodejs.org/en/download/ to see if there is any new version.
 
 In case of a new version, update `./app/Dockerfile` to change `NODE_18_VERSION`.
 
-### stunnel 5.67
+### stunnel 5.68
 
 Check https://www.stunnel.org/downloads.html to see if there is any new version.
 
@@ -52,7 +52,7 @@ In case of a new version, update `./app/Dockerfile` to change `STUNNEL_VERSION`.
 Check https://github.com/kubernetes-sigs/aws-iam-authenticator/releases to see if there is any new patch for `aws-iam-authenticator`.
 In case of a new patch, update `./app/Dockerfile` to change the corresponding URLS
 
-#### kubectl 1.24.9
+#### kubectl 1.25.6
 
 NOTE: according the [AWS document](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html), `kubectl` supports plus/minus
 only one minor version difference of EKS control plane. We do not have the free choice to pick the `kubectl` version.
